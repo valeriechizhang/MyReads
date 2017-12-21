@@ -10,4 +10,4 @@ A simple single-page web application using ReactJS.
 
 
 ## Reference
-Udacity React Nanodegree
+Udacity React Nanodegree Program
