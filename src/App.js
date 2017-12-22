@@ -12,25 +12,17 @@ class BooksApp extends Component {
     }
 
     componentDidMount() {
+        this.fetchBooks()
+    }
+
+    fetchBooks = () => {
         BooksAPI.getAll().then((books) => {
             this.setState({ books })
         })
     }
 
     moveBook = (book, shelf) => {
-        var temp = this.state.books
-        if (this.state.books.filter(b => b.id === book.id).length === 0) {
-            book.shelf = shelf
-            temp.push(book)
-        } else {
-            for (var t of temp) {
-                if (t.id === book.id) {
-                    t.shelf = shelf
-                }
-            }
-        }
-        this.setState({ books: temp })
-        BooksAPI.update(book, shelf)
+        BooksAPI.update(book, shelf).then(this.fetchBooks())
     }
 
     render() {

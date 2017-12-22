@@ -12,7 +12,6 @@ class Book extends Component {
     }
 
     getShelf = (book) => {
-        console.log(book)
         if (book.hasOwnProperty('shelf')) {
             return book.shelf
         } else {
@@ -27,7 +26,7 @@ class Book extends Component {
         return (
             <div className='book'>
                 <div className='book-top'>
-                    <div className='book-cover' style={{width:128, height:193, backgroundImage: `url(${book.imageLinks.thumbnail})`}}/>
+                    <div className='book-cover' style={{width:128, height:193, backgroundImage: `url(${book.imageLinks && book.imageLinks.thumbnail})`}}/>
                     <div className='book-shelf-changer'>
                         <select value={this.getShelf(book)} onChange={(event) => moveBook(book, event.target.value)}>
                             <option value="none" disabled>Move to...</option>
@@ -39,7 +38,7 @@ class Book extends Component {
                     </div>
                 </div>
                 <div className="book-title">{ book.title }</div>
-                <div className="book-authors">{ book.authors }</div>
+                <div className="book-authors">{ book.authors && book.authors.join(' ') }</div>
             </div>
         )
     }

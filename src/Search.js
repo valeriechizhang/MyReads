@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import sortBy from 'sort-by'
 import * as BooksAPI from './BooksAPI'
 import Bookgrid from './Bookgrid'
+import {DebounceInput} from 'react-debounce-input';
 
 
 class Search extends Component {
@@ -17,12 +18,21 @@ class Search extends Component {
     }
 
     updateQuery = (query) => {
+        this.setState({ results: [] })
+        this.setState({ query: query.trim() })
         if (query.length > 0) {
-            this.setState({ query: query.trim() })
             BooksAPI.search(query).then((books) => {
-                this.setState({ results:books })
+                if (books.hasOwnProperty('error')) {
+                    this.clearQuery()
+                } else {
+                    this.setState({ results:books })
+                }
             })
         }
+    }
+
+    clearQuery = () => {
+        this.setState({ query: '', results: [] })
     }
 
     render() {
@@ -30,12 +40,14 @@ class Search extends Component {
         const { query, results } = this.state
 
         var combined = []
-        for (var result of results) {
-            var intersect = books.filter(book => book.id === result.id)
-            if (intersect == null || intersect.length === 0) {
-                combined.push(result)
-            } else {
-                combined.push(intersect[0])
+        if (results && results.length > 0) {
+            for (var result of results) {
+                var intersect = books.filter(book => book.id === result.id)
+                if (intersect == null || intersect.length === 0) {
+                    combined.push(result)
+                } else {
+                    combined.push(intersect[0])
+                }
             }
         }
 
@@ -46,9 +58,10 @@ class Search extends Component {
                 <div className='search-books-bar'>
                     <Link className='close-search' to='/'>Close</Link>
                     <div className='search-books-input-wrapper'>
-                        <input type='text' placeholder='Search by title or author'
+                        <DebounceInput minLength={3} debounceTimeout={1000} type='text' placeholder='Search by title or author'
                         value={query} onChange={(event)=>this.updateQuery(event.target.value)}/>
                     </div>
+                    <button onClick={this.clearQuery} type='button'>Clear</button>
                 </div>
                 <div className='search-books-results'>
                     <Bookgrid books={combined} moveBook={moveBook}/>
@@ -59,4 +72,3 @@ class Search extends Component {
 }
 
 export default Search
-
